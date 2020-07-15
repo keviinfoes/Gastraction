@@ -1,2 +1,2 @@
 # Gastraction
-Gastraction - abstraction to use tokens to pay for gas
+Gastraction - smart contract based abstraction for token gas payments
