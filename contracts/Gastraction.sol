@@ -15,10 +15,8 @@ contract Gastraction {
     IEXC public exchange;
     IERC20 public token;
     address public weth;
-
-    uint256 public balance; 
     address public owner;
-    
+        
     bool locked;
     modifier noReentrancy() {
         require(
@@ -33,7 +31,7 @@ contract Gastraction {
         require(msg.sender == owner, "caller is not the owner");
         _;
     }
-    
+
     receive() external payable {}
     fallback() external payable {}
     
@@ -45,30 +43,20 @@ contract Gastraction {
         owner = _owner;
         token.approve(address(exchange), uint256(-1));
     }
-    
-    function set() noReentrancy public payable {
-        if (msg.value > 0) {
-            (bool success,) = owner.call{value: msg.value}("");
-            require(success, "transfer ether failed");
-        }
-        balance = owner.balance;
-    }
-    
-    function tokenGas(address dapp, bytes memory action, uint256 maxCost) onlyOwner noReentrancy public payable {
-        require(msg.sender.balance < balance, "balance does not decrease");
-        uint256 difference =  balance.sub(msg.sender.balance);
+
+    function tokenGas(address dapp, bytes memory action, uint256 maxCost, uint256 gas) onlyOwner noReentrancy public payable {
+
+        (bool success,) = dapp.call{value: msg.value}(action);
+        require(success, "dapp call failed");
+        
+        uint256 gasCost = gas.mul(tx.gasprice);
         address[] memory path = new address[](2);
         path[0] = address(token);
         path[1] = weth;
-        exchange.swapTokensForExactETH(difference, maxCost, path, msg.sender, block.timestamp);
-        (bool success,) = dapp.call{value: msg.value}(action);
-        require(success, "dapp call failed");
-        require(balance == msg.sender.balance, "final balance is not equal to base amount");
+        exchange.swapTokensForExactETH(gasCost, maxCost, path, msg.sender, block.timestamp);
     }
-    
+
     function etherGas(address dapp, bytes memory action) onlyOwner noReentrancy public payable {
-        require(msg.sender.balance < balance, "balance does not decrease");
-        balance = msg.sender.balance;
         (bool success,) = dapp.call{value: msg.value}(action);
         require(success, "dapp call failed");
     }

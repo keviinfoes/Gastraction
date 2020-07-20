@@ -14,18 +14,18 @@ contract Exchange {
 
   /*
    *  Function requires initial deposit of ETH in contract 
-   *  Uses fixed price of 200 tokens for 1 ETH.
+   *  Uses fixed price of 200 tokens for 1 ETH. 
    *
    */
   function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] memory path, address to, uint deadline) 
       public returns (uint[] memory amounts) {
         require(deadline >= block.timestamp, "deadline passed");
         IERC20 token = IERC20(path[0]);        
-        uint256 amount = amountOut * 200;
-        require(amount <= amountInMax, "amount above amountInMax");
-        token.transferFrom(msg.sender, address(this), amount);
-        amounts = new uint[](1);
+        uint cost = amountOut * 200;
+        require(token.transferFrom(msg.sender, address(this), cost), "transfer exchange failed");
+        amounts = new uint[](2);
         amounts[0] = amountOut;
+        amounts[1] = amountInMax;
         payable(to).transfer(amountOut);
   }
 }
