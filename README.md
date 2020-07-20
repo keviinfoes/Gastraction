@@ -8,7 +8,7 @@ It is not possible to remove the payment of gas (transaction fee). However it is
 
 Gastraction adds a new option: partial abstraction. This is abstraction where the users indirectly pays for gas with their tokens. Gasstraction can be used by users themselfs or integrated in the front end of dapps. No changes in the smart contracts are needed. This is done by creating a proxy contract for every user and calling smart contract functions through the proxy. After every call the  proxy contract trades the token amount of gas for the spend ether in gas. This keeps the eth balance ~equal and deducts the gas from the token balance. The user still needs a small amount of ether (for example 0.1 ETH), but after the first deposit they don't have to look at the ether balance at all. 
 
-*The exchange of tokens for ether increases the cost of a transaction. The proxy also lets the user pay for gas using ether, no exchange for tokens is needed in this case. 
+*The exchange of tokens for ether increases the cost of a transaction. The proxy also lets the user pay for gas using ether, no exchange for tokens is needed in this case.* 
 
 ## Run example
 Gastraction is deployed to the ropsten test network. With a dummy token and exchange. The exchange rate is fixed at 200 dummy tokens per test ether.
